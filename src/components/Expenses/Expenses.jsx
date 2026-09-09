@@ -1,5 +1,5 @@
-import ExpenseItem from './ExpenseItem.jsx';
 import './Expenses.css';
+import ExpenseItem from './ExpenseItem.jsx';
 
 const Expenses = (props) => {
     return (
