@@ -4,24 +4,22 @@ import ExpenseItem from './ExpenseItem.jsx';
 import ExpensesFilter from './ExpensesFilter.jsx';
 
 const Expenses = (props) => {
+    const [filteredYear, setFilteredYear] = useState('2024');
+
     const filteredYearHandler = (filteredYear) => {
-        console.log('Year Data in Expenses.jsx' + filteredYear  );
+        setFilteredYear(filteredYear);
     }
 
-    props.expenses.map((expense) => {
-        console.log(expense)
-    })
-
-    const filteredExpenses = props.items.filter(
+    const filteredExpenses = props.expenses.filter(
         (expense) => expense.date.getFullYear().toString() === filteredYear
     );
 
     return (
         <div className='expenses'>
-            <ExpensesFilter  onChangeFilter={filteredYearHandler}/>
+            <ExpensesFilter selected={filteredYear} onChangeFilter={filteredYearHandler}/>
             {
-                props.expenses.map((expense) => {
-                    return <ExpenseItem expenseData={expense} key={expense.id} />;
+                filteredExpenses.map((expense) => {
+                    return <ExpenseItem data={expense} key={expense.id} />;
                 })
             }
         </div>
