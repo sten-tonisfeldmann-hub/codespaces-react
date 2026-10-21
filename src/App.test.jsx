@@ -1,14 +1,17 @@
-import { expect, test } from 'vitest';
+import { beforeEach, expect, test } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
+
+beforeEach(() => {
+  localStorage.clear();
+});
 
 test('renders expense list with item titles', () => {
   render(<App />);
 
-  expect(screen.getByText('New book')).toBeInTheDocument();
-  expect(screen.getByText('New jeans')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add New Expense' })).toBeInTheDocument();
   expect(screen.queryByLabelText('Title')).not.toBeInTheDocument();
+  expect(screen.queryByText('New book')).not.toBeInTheDocument();
 });
 
 test('opens and cancels the new expense form without adding an expense', () => {
@@ -34,6 +37,32 @@ test('adds a valid expense and closes the form', () => {
 
   expect(screen.getByText('New Test Control')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add New Expense' })).toBeInTheDocument();
+
+  const storedExpenses = JSON.parse(localStorage.getItem('expenses'));
+  expect(storedExpenses).toHaveLength(1);
+  expect(storedExpenses[0]).toMatchObject({
+    title: 'New Test Control',
+    price: 11.99,
+    date: '2024-01-19T00:00:00.000Z'
+  });
+});
+
+test('restores saved expenses and their dates from local storage', () => {
+  localStorage.setItem('expenses', JSON.stringify([
+    {
+      id: 'saved-expense',
+      title: 'Saved expense',
+      price: 11.99,
+      date: new Date(2024, 0, 19).toISOString()
+    }
+  ]));
+
+  render(<App />);
+
+  expect(screen.getByText('Saved expense')).toBeInTheDocument();
+  expect(screen.getByText('January')).toBeInTheDocument();
+  expect(screen.getByText('19')).toBeInTheDocument();
+  expect(screen.getByText('2024', { selector: '.expense-date__year' })).toBeInTheDocument();
 });
 
 test('shows an error for invalid expense data and dismisses it without closing the form', () => {
