@@ -1,11 +1,11 @@
 import './Card.css'
 
 const Card = (props) => {
+    const { className, children, ...otherProps } = props;
 
     return (
-        <div classname="card">
-
-
+        <div className={`card ${className || ''}`.trim()} {...otherProps}>
+            {children}
         </div>
     )
 }

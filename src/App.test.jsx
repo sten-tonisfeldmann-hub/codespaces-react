@@ -35,3 +35,31 @@ test('adds a valid expense and closes the form', () => {
   expect(screen.getByText('New Test Control')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add New Expense' })).toBeInTheDocument();
 });
+
+test('shows an error for invalid expense data and dismisses it without closing the form', () => {
+  render(<App />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Add New Expense' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Add Expense' }));
+
+  expect(screen.getByText('Invalid Input')).toBeInTheDocument();
+  expect(screen.getByText('Please enter a valid title, amount, and date.')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Okay' }));
+
+  expect(screen.queryByText('Invalid Input')).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Title')).toBeInTheDocument();
+});
+
+test('shows an error when the expense amount is not positive', () => {
+  render(<App />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Add New Expense' }));
+  fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Invalid Expense' } });
+  fireEvent.change(screen.getByLabelText('Amount'), { target: { value: '0' } });
+  fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2024-01-19' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Add Expense' }));
+
+  expect(screen.getByText('Invalid Input')).toBeInTheDocument();
+  expect(screen.queryByText('Invalid Expense')).not.toBeInTheDocument();
+});
